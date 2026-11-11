@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YouTube Shorts Desktop Style</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+background:#000;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+overflow:hidden;
+}
+
+/* DESKTOP SHORTS CONTAINER */
+#player-container{
+position:relative;
+width:100%;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:#000;
+}
+
+/* PHONE SIZE VIDEO AREA */
+.short-wrapper{
+position:relative;
+width:420px;
+height:90vh;
+max-height:900px;
+aspect-ratio:9/16;
+background:#000;
+border-radius:18px;
+overflow:hidden;
+box-shadow:0 0 40px rgba(255,255,255,.08);
+}
+
+/* VIDEO */
+video{
+width:100%;
+height:100%;
+object-fit:cover;
+background:#000;
+}
+
+/* TOP BAR */
+.top-title{
+position:absolute;
+top:16px;
+left:20px;
+color:white;
+font-size:24px;
+font-weight:bold;
+z-index:50;
+}
+
+.top-title::before{
+content:"▶ ";
+color:red;
+}
+
+/* VIDEO INFO */
+.video-info{
+position:absolute;
+bottom:100px;
+left:15px;
+color:white;
+z-index:50;
+max-width:70%;
+text-shadow:0 2px 10px rgba(0,0,0,.8);
+}
+
+/*.username{
+font-weight:bold;
+font-size:18px;
+margin-bottom:8px;
+}
+
+.caption{
+font-size:14px;
+line-height:1.5;
+}
+
+/* RIGHT SIDEBAR */
+.sidebar{
+position:absolute;
+right:10px;
+bottom:100px;
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:16px;
+z-index:100;
+}
+
+.profile{
+width:55px;
+height:55px;
+border-radius:50%;
+border:3px solid white;
+object-fit:cover;
+}
+
+.action-block{
+text-align:center;
+}
+
+.action-btn{
+width:55px;
+height:55px;
+border:none;
+border-radius:50%;
+background:rgba(0,0,0,.45);
+color:white;
+font-size:22px;
+cursor:pointer;
+transition:.2s;
+backdrop-filter:blur(4px);
+}
+
+.action-btn:hover{
+transform:scale(1.08);
+}
+
+.count{
+color:white;
+font-size:12px;
+margin-top:4px;
+}
+
+/* CONTROLS */
+.controls{
+position:absolute;
+bottom:20px;
+left:50%;
+transform:translateX(-50%);
+display:flex;
+gap:12px;
+z-index:100;
+opacity:0;
+transition:.3s;
+}
+
+.short-wrapper:hover .controls{
+opacity:1;
+}
+
+.controls button{
+width:50px;
+height:50px;
+border:none;
+border-radius:50%;
+background:rgba(255,255,255,.18);
+color:white;
+font-size:20px;
+cursor:pointer;
+backdrop-filter:blur(8px);
+}
+
+/* VIDEO COUNT */
+.video-counter{
+position:absolute;
+top:20px;
+right:15px;
+color:white;
+font-size:13px;
+z-index:50;
+background:rgba(0,0,0,.4);
+padding:6px 12px;
+border-radius:20px;
+}
+
+/* FADE */
+.fade{
+animation:fade .25s linear;
+}
+
+@keyframes fade{
+from{
+opacity:.3;
+}
+to{
+opacity:1;
+}
+}
+
+/* MOBILE */
+@media(max-width:768px){
+
+.short-wrapper{
+width:100vw;
+height:100vh;
+border-radius:0;
+}
+
+.controls{
+opacity:1;
+}
+}
+</style>
+</head>
+
+<body>
+
+<div id="player-container">
+
+<div class="short-wrapper">
+
+<div class="top-title">
+Shorts
+</div>
+
+<div class="video-counter" id="videoCounter">
+1 / 1
+</div>
+
+<video
+id="videoPlayer"
+playsinline
+autoplay
+muted
+loop>
+</video>
+
+<div class="video-info">
+<div class="username" id="username"></div>
+<div class="caption" id="caption"></div>
+</div>
+
+<div class="sidebar">
+
+<img
+id="profilePic"
+class="profile"
+src="">
+
+<div class="action-block">
+<button class="action-btn" id="likeBtn">⦾</button>
+<div class="count" id="likeCount">0</div>
+</div>
+
+<div class="action-block">
+<button class="action-btn">⦾</button>
+<div class="count">Dislike</div>
+</div>
+
+<div class="action-block">
+<button class="action-btn">⦾</button>
+<div class="count">Share</div>
+</div>
+
+<div class="action-block">
+<button class="action-btn">⬇</button>
+<div class="count">Remix</div>
+</div>
+
+</div>
+
+<div class="controls">
+
+<button id="playPauseBtn">⏸</button>
+<button id="volumeBtn">🔊</button>
+<button id="fullscreenBtn">⛶</button>
+
+</div>
+
+</div>
+</div>
+
+<script>
+
+const videos = [
+
+{
+video:"vid 2.mp4",
+user:"Italk Network",
+thumbnail:"Lion 3.jpg",
+caption:"First video caption",
+likes:1200
+},
+
+{
+video:"vid 1.mp4",
+user:"@creator_two",
+thumbnail:"Lion 3.jpg",
+caption:"Second short video",
+likes:587
+},
+
+{
+video:"vid 2.mp4",
+user:"@creator_three",
+thumbnail:"Lion 3.jpg",
+caption:"Another short clip",
+likes:2450
+}
+
+];
+
+const player=document.getElementById("videoPlayer");
+const username=document.getElementById("username");
+const caption=document.getElementById("caption");
+const profilePic=document.getElementById("profilePic");
+const likeCount=document.getElementById("likeCount");
+const videoCounter=document.getElementById("videoCounter");
+
+const playPauseBtn=document.getElementById("playPauseBtn");
+const volumeBtn=document.getElementById("volumeBtn");
+const fullscreenBtn=document.getElementById("fullscreenBtn");
+
+let currentIndex=0;
+
+function loadVideo(index){
+
+if(index<0) index=videos.length-1;
+if(index>=videos.length) index=0;
+
+currentIndex=index;
+
+const item=videos[currentIndex];
+
+player.src=item.video;
+username.innerText=item.user;
+caption.innerText=item.caption;
+profilePic.src=item.thumbnail;
+
+likeCount.innerText=item.likes.toLocaleString();
+
+videoCounter.innerText=
+`${currentIndex+1} / ${videos.length}`;
+
+player.play();
+
+player.classList.add("fade");
+
+setTimeout(()=>{
+player.classList.remove("fade");
+},250);
+}
+
+function nextVideo(){
+loadVideo(currentIndex+1);
+}
+
+function previousVideo(){
+loadVideo(currentIndex-1);
+}
+
+/* PLAY/PAUSE */
+
+playPauseBtn.onclick=()=>{
+
+if(player.paused){
+player.play();
+playPauseBtn.innerHTML="⏸";
+}else{
+player.pause();
+playPauseBtn.innerHTML="▶";
+}
+
+};
+
+/* VIDEO CLICK */
+
+player.onclick=()=>{
+
+if(player.paused){
+player.play();
+playPauseBtn.innerHTML="⏸";
+}else{
+player.pause();
+playPauseBtn.innerHTML="▶";
+}
+
+};
+
+/* VOLUME */
+
+volumeBtn.onclick=()=>{
+
+player.muted=!player.muted;
+
+volumeBtn.innerHTML=
+player.muted ? "🔇" : "🔊";
+
+};
+
+/* FULLSCREEN */
+
+fullscreenBtn.onclick=()=>{
+
+if(!document.fullscreenElement){
+document.documentElement.requestFullscreen();
+}else{
+document.exitFullscreen();
+}
+
+};
+
+/* LIKE */
+
+document
+.getElementById("likeBtn")
+.addEventListener("click",()=>{
+
+let n=parseInt(
+likeCount.innerText.replace(/,/g,'')
+);
+
+n++;
+
+likeCount.innerText=
+n.toLocaleString();
+
+});
+
+/* MOUSE WHEEL */
+
+let wheelLock=false;
+
+window.addEventListener("wheel",(e)=>{
+
+if(wheelLock)return;
+
+wheelLock=true;
+
+setTimeout(()=>{
+wheelLock=false;
+},400);
+
+if(e.deltaY>0){
+nextVideo();
+}else{
+previousVideo();
+}
+
+});
+
+/* KEYBOARD */
+
+document.addEventListener("keydown",(e)=>{
+
+if(e.key==="ArrowDown")
+nextVideo();
+
+if(e.key==="ArrowUp")
+previousVideo();
+
+if(e.key===" ")
+player.paused
+? player.play()
+: player.pause();
+
+if(e.key==="m")
+player.muted=!player.muted;
+
+});
+
+/* LOAD FIRST */
+
+loadVideo(0);
+
+</script>
+
+</body>
+</html>

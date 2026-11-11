@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube-like Layout</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #000000;
+      color: #fff;
+    }
+
+    /* Header */
+    header {
+      background-color: #000;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center; /* Center search bar */
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    header input[type="text"] {
+      width: 100%;
+      max-width: 600px;
+      padding: 10px;
+      border: none;
+      border-radius: 20px;
+      font-size: 16px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background-color: #000000;
+      height: 100vh;
+      position: fixed;
+      top: 50px;
+      left: 0;
+      padding: 20px 0;
+      overflow-y: auto;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .sidebar ul li {
+      padding: 12px 20px;
+      cursor: pointer;
+    }
+
+    .sidebar ul li:hover {
+      background-color: #383838;
+    }
+
+    /* Content Grid */
+    .content {
+      margin-left: 240px;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }     /*----------------------------------------------------------------------------*/
+
+    .card {
+      background-color: #282828;
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .card img.thumbnail {
+      width: 100%;
+      display: block;
+    }
+
+    .details {
+      padding: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .details img.channel {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .text {
+      flex: 1;
+    }
+
+    .text h3 {
+      margin: 0;
+      font-size: 16px;
+    }
+
+    .text p {
+      margin: 5px 0 0;
+      font-size: 14px;
+      color: #aaa;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .content {
+        margin-left: 0;
+      }
+      .sidebar {
+        display: none; /* Hide sidebar on tablets and smaller */
+      }
+    }
+
+    @media (max-width: 768px) {
+      header input[type="text"] {
+        width: 80%;
+     
+      }
+    }
+
+    @media (max-width: 480px) {
+      header input[type="text"] {
+        width: 90%;
+        font-size: 14px;
+      }
+      .details img.channel {
+        width: 32px;
+        height: 32px;
+      }
+      .text h3 {
+        font-size: 14px;
+      }
+      .text p {
+        font-size: 12px;
+      }
+      
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <input type="text" id="searchBar" placeholder="Search area">
+  </header>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <ul>
+      <li onclick="loadCategory('home')">Home</li>
+      <li onclick="loadCategory('trending')">Shorts</li>
+      <li onclick="loadCategory('subscriptions')">Music</li>
+      <li onclick="loadCategory('library')">Library</li>
+      <li onclick="loadCategory('history')">Watch Later</li>
+    </ul>
+    <ul>
+      <li onclick="loadCategory('one')">Quick Check</li>
+      <li onclick="loadCategory('Sign In')">Expolore</li>
+      <li onclick="loadCategory('subscriptions')">Subscriptions</li>
+      
+    </ul>
+  </div>
+  
+
+  <!-- Content -->
+  <div class="content" id="videoGrid"></div>
+
+  <script>
+    // Example data for categories with links
+    const categoryData = {
+      home: [
+        {thumbnail: "Short Thumbnail.png", thumbLink: "Vid 2.mp4", channel: "Lion 3.jpg", channelLink: "channel1.html", title: "Senara Dias ", info: "Senara Dias • 1.2M views • 1 day ago"},
+        {thumbnail: "Short Thumbnail.png", thumbLink: "Vid 2.mp4", channel: "Lion 3.jpg", channelLink: "channel2.html", title: "Responsive Web Tutorial", info: "John Dev • 850K views • 2 days ago"},
+        {thumbnail: "Short Thumbnail.png", thumbLink: "Vid 2.mp4", channel: "Lion 3.jpg", channelLink: "channel1.html", title: "Modern Website Design 2026", info: "Senara Dias • 1.2M views • 1 day ago"},
+        {thumbnail: "Short Thumbnail.png", thumbLink: "Vid 2.mp4", channel: "Lion 3.jpg", channelLink: "channel2.html", title: "Responsive Web Tutorial", info: "John Dev • 850K views • 2 days ago"},
+        {thumbnail: "Short Thumbnail.png", thumbLink: "Vid 2.mp4", channel: "Lion 3.jpg", channelLink: "channel1.html", title: "Modern Website Design 2026", info: "Senara Dias • 1.2M views • 1 day ago"},
+        {thumbnail: "Short Thumbnail.png", thumbLink: "Vid 2.mp4", channel: "Lion 3.jpg", channelLink: "channel2.html", title: "Responsive Web Tutorial", info: "John Dev • 850K views • 2 days ago"},
+        {thumbnail: "Short Thumbnail.png", thumbLink: "Vid 2.mp4", channel: "Lion 3.jpg", channelLink: "channel1.html", title: "Modern Website Design 2026", info: "Senara Dias • 1.2M views • 1 day ago"},
+        {thumbnail: "Short Thumbnail.png", thumbLink: "Vid 2.mp4", channel: "Lion 3.jpg", channelLink: "channel2.html", title: "Responsive Web Tutorial", info: "John Dev • 850K views • 2 days ago"},
+        {thumbnail: "Lion.jpg", thumbLink: "video1.html", channel: "Lion 3.jpg", channelLink: "channel1.html", title: "Modern Website Design 2026", info: "Senara Dias • 1.2M views • 1 day ago"},
+        {thumbnail: "Lion.jpg", thumbLink: "video2.html", channel: "Lion 3.jpg", channelLink: "channel2.html", title: "Responsive Web Tutorial", info: "John Dev • 850K views • 2 days ago"},
+        {thumbnail: "Lion.jpg", thumbLink: "video1.html", channel: "Lion 3.jpg", channelLink: "channel1.html", title: "Modern Website Design 2026", info: "Senara Dias • 1.2M views • 1 day ago"},
+        {thumbnail: "Lion.jpg", thumbLink: "video2.html", channel: "Lion 3.jpg", channelLink: "channel2.html", title: "Responsive Web Tutorial", info: "John Dev • 850K views • 2 days ago"},
+        {thumbnail: "Lion.jpg", thumbLink: "video1.html", channel: "Lion 3.jpg", channelLink: "channel1.html", title: "Modern Website Design 2026", info: "Senara Dias • 1.2M views • 1 day ago"},
+        {thumbnail: "Lion.jpg", thumbLink: "video2.html", channel: "Lion 3.jpg", channelLink: "channel2.html", title: "Responsive Web Tutorial", info: "John Dev • 850K views • 2 days ago"},
+        {thumbnail: "Lion.jpg", thumbLink: "video1.html", channel: "Lion 3.jpg", channelLink: "channel1.html", title: "Modern Website Design 2026", info: "Senara Dias • 1.2M views • 1 day ago"},
+        {thumbnail: "Lion.jpg", thumbLink: "video2.html", channel: "Lion 3.jpg", channelLink: "channel2.html", title: "Responsive Web Tutorial", info: "John Dev • 850K views • 2 days ago"}
+        
+      ],
+      trending: [
+        {thumbnail: "Short thumbnail.png", thumbLink: "check.html", channel: "Lion 3.jpg", channelLink: "channel3.html", title: "Top 10 CSS Tricks", info: "CodeMaster • 500K views • 3 days ago"},
+        {thumbnail: "Short thumbnail.png", thumbLink: "check.html", channel: "Lion 3.jpg", channelLink: "channel4.html", title: "JavaScript ES2026 Features", info: "Tech Guru • 300K views • 4 days ago"},
+        {thumbnail: "Short thumbnail.png", thumbLink: "check.html", channel: "Lion 3.jpg", channelLink: "channel3.html", title: "Top 10 CSS Tricks", info: "CodeMaster • 500K views • 3 days ago"},
+        {thumbnail: "Short thumbnail.png", thumbLink: "check.html", channel: "Lion 3.jpg", channelLink: "channel4.html", title: "JavaScript ES2026 Features", info: "Tech Guru • 300K views • 4 days ago"}
+      ],
+      subscriptions: [
+        {thumbnail: "lion.jpg", thumbLink: "video5.html", channel: "Lion 3.jpg", channelLink: "channel5.html", title: "Daily Coding Challenge", info: "CoderX • 200K views • 5 days ago"},
+{thumbnail: "lion.jpg", thumbLink: "video5.html", channel: "Lion 3.jpg", channelLink: "channel5.html", title: "Daily Coding Challenge", info: "CoderX • 200K views • 5 days ago"}
+
+      ],
+      library: [
+        {thumbnail: "lion.jpg", thumbLink: "video6.html", channel: "Lion 3.jpg", channelLink: "channel6.html", title: "Saved Tutorial Playlist", info: "My Library • 100K views • 6 days ago"}
+      ],
+      history: [
+        {thumbnail: "lion.jpg", thumbLink: "video7.html", channel: "Lion 3.jpg", channelLink: "channel7.html", title: "Recently Watched Video", info: "History Channel • 50K views • 7 days ago"}
+      ],
+      watchlater: [
+        {thumbnail: "lion.jpg", thumbLink: "video8.html", channel: "Lion 3.jpg", channelLink: "channel8.html", title: "Watch Later Example", info: "Future Watch • 10K views • 8 days ago"}
+      ],
+      favorites: [
+        {thumbnail: "lion.jpg", thumbLink: "video9.html", channel: "Lion 3.jpg", channelLink: "channel9.html", title: "Favorite Coding Tutorial", info: "Fav Dev • 5K views • 9 days ago"}
+      ],
+      one: [
+        {thumbnail: "lion 2.jpg", thumbLink: "video9.html", channel: "Lion 3.jpg", channelLink: "channel9.html", title: "Favorite Coding Tutorial", info: "Fav Dev • 5K views • 9 days ago"},
+        {thumbnail: "lion 2.jpg", thumbLink: "video9.html", channel: "Lion 3.jpg", channelLink: "channel9.html", title: "Favorite Coding Tutorial", info: "Fav Dev • 5K views • 9 days ago"},
+        {thumbnail: "lion 2.jpg", thumbLink: "video9.html", channel: "Lion 3.jpg", channelLink: "channel9.html", title: "Favorite Coding Tutorial", info: "Fav Dev • 5K views • 9 days ago"},
+        {thumbnail: "lion 2.jpg", thumbLink: "video9.html", channel: "Lion 3.jpg", channelLink: "channel9.html", title: "Favorite Coding Tutorial", info: "Fav Dev • 5K views • 9 days ago"},
+        {thumbnail: "lion 2.jpg", thumbLink: "video9.html", channel: "Lion 3.jpg", channelLink: "channel9.html", title: "Favorite Coding Tutorial", info: "Fav Dev • 5K views • 9 days ago"},
+        
+      ]
+      
+    };
+
+    
+
+    // Function to load category content
+    function loadCategory(category) {
+      const videoGrid = document.getElementById('videoGrid');
+      videoGrid.innerHTML = ""; // Clear old content
+      categoryData[category].forEach(video => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <a href="${video.thumbLink}">
+            <img src="${video.thumbnail}" alt="Video Thumbnail" class="thumbnail">
+          </a>
+          <div class="details">
+            <a href="${video.channelLink}">
+              <img src="${video.channel}" alt="Channel Image" class="channel">
+            </a>
+            <div class="text">
+              <h3>${video.title}</h3>
+              <p>${video.info}</p>
+            </div>
+          </div>
+        `;
+        videoGrid.appendChild(card);
+      });
+    }
+
+    // Default load
+    loadCategory('home');
+
+    // Search functionality
+    const searchBar = document.getElementById('searchBar');
+    searchBar.addEventListener('keyup', function(e) {
+      const query = e.target.value.toLowerCase();
+      const cards = document.querySelectorAll('.card');
+      cards.forEach(card => {
+        const title = card.querySelector('h3').textContent.toLowerCase();
+        card.style.display = title.includes(query) ? '' : 'none';
+      });
+    });
+  </script>
+
+</body>
+</html> 
